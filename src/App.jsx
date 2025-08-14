@@ -5,10 +5,13 @@ import ReportPage from './components/ReportPage';
 import BackgroundImage from './components/BackgroundImage';
 
 function App() {
+  console.log('App component rendering...');
   const { currentPage, loading } = useQuiz();
+  console.log('App state:', { currentPage, loading });
 
   // Show enhanced loading state while fetching questions
   if (loading) {
+    console.log('App showing loading state');
     return (
       <BackgroundImage colorOverlay="space" opacity={0.4} theme="tech" blur={3}>
         <div className="min-h-screen flex items-center justify-center relative overflow-hidden">

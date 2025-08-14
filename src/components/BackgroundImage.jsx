@@ -2,24 +2,24 @@ import { useState, useEffect } from 'react';
 
 const BackgroundImage = ({ children, theme = 'quiz', className = '' }) => {
   const [imageUrl, setImageUrl] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Start with false to use gradients immediately
   const [error, setError] = useState(false);
 
   const themeConfig = {
     start: {
-      category: 'technology',
+      gradient: 'from-blue-900 via-purple-900 to-indigo-900',
       seed: 42,
       blur: 3,
       overlay: 'rgba(15, 23, 42, 0.85)'
     },
     quiz: {
-      category: 'space',
+      gradient: 'from-slate-900 via-blue-900 to-purple-900',
       seed: 100,
       blur: 2,
       overlay: 'rgba(15, 23, 42, 0.9)'
     },
     report: {
-      category: 'abstract',
+      gradient: 'from-emerald-900 via-blue-900 to-purple-900',
       seed: 200,
       blur: 1,
       overlay: 'rgba(15, 23, 42, 0.8)'
@@ -27,23 +27,33 @@ const BackgroundImage = ({ children, theme = 'quiz', className = '' }) => {
   };
 
   useEffect(() => {
+    // Only try to fetch external images if we're in a browser environment
+    if (typeof window === 'undefined') return;
+    
     const config = themeConfig[theme];
     const fetchImage = async () => {
       try {
         setLoading(true);
         setError(false);
         
-        const width = window.innerWidth || 1920;
-        const height = window.innerHeight || 1080;
+        const width = Math.min(window.innerWidth || 1920, 1920);
+        const height = Math.min(window.innerHeight || 1080, 1080);
+        
+        // Add timeout for the image loading
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
         
         const imageUrl = `https://picsum.photos/${width}/${height}?random&seed=${config.seed}&blur=${config.blur}`;
         
         const img = new Image();
         img.onload = () => {
+          clearTimeout(timeoutId);
           setImageUrl(imageUrl);
           setLoading(false);
         };
         img.onerror = () => {
+          clearTimeout(timeoutId);
+          console.log('Failed to load background image, using gradient fallback');
           setError(true);
           setLoading(false);
         };
@@ -62,25 +72,32 @@ const BackgroundImage = ({ children, theme = 'quiz', className = '' }) => {
 
   return (
     <div className={`relative min-h-screen overflow-hidden ${className}`}>
+      {/* Fallback gradient background - always visible */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient}`} />
+      
+      {/* External image overlay - only if loaded successfully */}
       {!error && imageUrl && (
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000"
           style={{
             backgroundImage: `url(${imageUrl})`,
-            opacity: loading ? 0 : 1
+            opacity: loading ? 0 : 0.3
           }}
         />
       )}
       
+      {/* Dark overlay for better text readability */}
       <div 
         className="absolute inset-0"
         style={{ backgroundColor: config.overlay }}
       />
       
+      {/* Accent gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-600/10 to-purple-600/10" />
       
+      {/* Grid pattern overlay */}
       <div 
-        className="absolute inset-0 opacity-30"
+        className="absolute inset-0 opacity-20"
         style={{
           backgroundImage: `
             linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px),
@@ -90,6 +107,7 @@ const BackgroundImage = ({ children, theme = 'quiz', className = '' }) => {
         }}
       />
       
+      {/* Content */}
       <div className="relative z-10">
         {children}
       </div>

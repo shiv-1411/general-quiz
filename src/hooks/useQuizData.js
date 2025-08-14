@@ -26,6 +26,7 @@ const useQuizData = () => {
   useEffect(() => {
     const fetchQuizData = async () => {
       try {
+        console.log('Fetching quiz data...');
         setLoading(true);
         setError(null);
 

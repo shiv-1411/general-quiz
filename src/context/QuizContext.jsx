@@ -133,19 +133,23 @@ const quizReducer = (state, action) => {
 
 // Quiz Context Provider Component
 export const QuizProvider = ({ children }) => {
+  console.log('QuizProvider rendering...');
   const [state, dispatch] = useReducer(quizReducer, initialState);
   
   // Fetch quiz data using the custom hook
   const { questions, loading, error } = useQuizData();
+  console.log('QuizProvider data:', { questions: questions.length, loading, error });
 
   // Update state when quiz data is loaded
   useEffect(() => {
     if (questions.length > 0) {
+      console.log('Setting questions in state:', questions.length);
       dispatch({ type: QUIZ_ACTIONS.SET_QUESTIONS, payload: questions });
     }
   }, [questions]);
 
   useEffect(() => {
+    console.log('Setting loading state:', loading);
     dispatch({ type: QUIZ_ACTIONS.SET_LOADING, payload: loading });
   }, [loading]);
 
