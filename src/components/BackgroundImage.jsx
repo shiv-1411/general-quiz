@@ -14,34 +14,39 @@ const BackgroundImage = ({
 
   const themeConfig = {
     start: {
-      gradient: 'from-blue-900 via-purple-900 to-indigo-900',
+      gradient: 'bg-cosmic',
       seed: 42,
       blur: 3,
-      overlay: 'rgba(15, 23, 42, 0.85)'
+      overlay: 'rgba(15, 23, 42, 0.4)',
+      particles: true
     },
     quiz: {
-      gradient: 'from-slate-900 via-blue-900 to-purple-900',
+      gradient: 'bg-nebula',
       seed: 100,
       blur: 2,
-      overlay: 'rgba(15, 23, 42, 0.9)'
+      overlay: 'rgba(15, 23, 42, 0.5)',
+      particles: true
     },
     report: {
-      gradient: 'from-emerald-900 via-blue-900 to-purple-900',
+      gradient: 'bg-aurora',
       seed: 200,
       blur: 1,
-      overlay: 'rgba(15, 23, 42, 0.8)'
+      overlay: 'rgba(15, 23, 42, 0.3)',
+      particles: true
     },
     tech: {
-      gradient: 'from-slate-900 via-blue-900 to-purple-900',
+      gradient: 'bg-matrix',
       seed: 150,
       blur: 3,
-      overlay: 'rgba(15, 23, 42, 0.85)'
+      overlay: 'rgba(15, 23, 42, 0.4)',
+      particles: true
     },
     abstract: {
-      gradient: 'from-emerald-900 via-blue-900 to-purple-900',
+      gradient: 'bg-cosmic',
       seed: 250,
       blur: 2,
-      overlay: 'rgba(15, 23, 42, 0.8)'
+      overlay: 'rgba(15, 23, 42, 0.4)',
+      particles: true
     }
   };
 
@@ -91,8 +96,80 @@ const BackgroundImage = ({
 
   return (
     <div className={`relative min-h-screen overflow-hidden ${className}`}>
-      {/* Fallback gradient background - always visible */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient}`} />
+      {/* Enhanced gradient background */}
+      <div className={`absolute inset-0 ${config.gradient}`} />
+      
+      {/* Animated particle effects */}
+      {config.particles && (
+        <div className="absolute inset-0">
+          {/* Floating particles */}
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-cyan-400/30 rounded-full animate-float"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${3 + Math.random() * 4}s`
+              }}
+            />
+          ))}
+          
+          {/* Data streams */}
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={`stream-${i}`}
+              className="absolute w-px h-32 bg-gradient-to-b from-transparent via-cyan-400/50 to-transparent animate-data-stream"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 10}s`,
+                animationDuration: `${8 + Math.random() * 4}s`
+              }}
+            />
+          ))}
+          
+          {/* Glowing orbs */}
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={`orb-${i}`}
+              className="absolute w-4 h-4 bg-gradient-radial from-purple-400/40 to-transparent rounded-full animate-particle-float"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 8}s`,
+                animationDuration: `${6 + Math.random() * 6}s`
+              }}
+            />
+          ))}
+        </div>
+      )}
+      
+      {/* Neural network lines */}
+      <div className="absolute inset-0 opacity-20">
+        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.1" />
+              <stop offset="50%" stopColor="#a855f7" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.1" />
+            </linearGradient>
+          </defs>
+          {[...Array(15)].map((_, i) => (
+            <line
+              key={i}
+              x1={`${Math.random() * 100}%`}
+              y1={`${Math.random() * 100}%`}
+              x2={`${Math.random() * 100}%`}
+              y2={`${Math.random() * 100}%`}
+              stroke="url(#lineGradient)"
+              strokeWidth="1"
+              className="animate-pulse"
+              style={{ animationDelay: `${Math.random() * 3}s` }}
+            />
+          ))}
+        </svg>
+      </div>
       
       {/* External image overlay - only if loaded successfully */}
       {!error && imageUrl && (
