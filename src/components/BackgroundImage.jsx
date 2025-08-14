@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
 
-const BackgroundImage = ({ children, theme = 'quiz', className = '' }) => {
+const BackgroundImage = ({ 
+  children, 
+  theme = 'quiz', 
+  className = '', 
+  colorOverlay, 
+  opacity, 
+  blur 
+}) => {
   const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false); // Start with false to use gradients immediately
   const [error, setError] = useState(false);
@@ -23,6 +30,18 @@ const BackgroundImage = ({ children, theme = 'quiz', className = '' }) => {
       seed: 200,
       blur: 1,
       overlay: 'rgba(15, 23, 42, 0.8)'
+    },
+    tech: {
+      gradient: 'from-slate-900 via-blue-900 to-purple-900',
+      seed: 150,
+      blur: 3,
+      overlay: 'rgba(15, 23, 42, 0.85)'
+    },
+    abstract: {
+      gradient: 'from-emerald-900 via-blue-900 to-purple-900',
+      seed: 250,
+      blur: 2,
+      overlay: 'rgba(15, 23, 42, 0.8)'
     }
   };
 
@@ -30,7 +49,7 @@ const BackgroundImage = ({ children, theme = 'quiz', className = '' }) => {
     // Only try to fetch external images if we're in a browser environment
     if (typeof window === 'undefined') return;
     
-    const config = themeConfig[theme];
+    const config = themeConfig[theme] || themeConfig.quiz; // Fallback to 'quiz' theme if theme not found
     const fetchImage = async () => {
       try {
         setLoading(true);
@@ -68,7 +87,7 @@ const BackgroundImage = ({ children, theme = 'quiz', className = '' }) => {
     fetchImage();
   }, [theme]);
 
-  const config = themeConfig[theme];
+  const config = themeConfig[theme] || themeConfig.quiz; // Fallback to 'quiz' theme if theme not found
 
   return (
     <div className={`relative min-h-screen overflow-hidden ${className}`}>
