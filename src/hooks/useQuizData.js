@@ -64,12 +64,12 @@ const useQuizData = () => {
 
                 setQuestions(processedQuestions);
                 return; // Success, exit the function
-              } else if (data.response_code === 1) {
-                throw new Error('No results found. Please try again.');
-              } else if (data.response_code === 2) {
-                throw new Error('Invalid parameter. Please try again.');
               } else {
-                throw new Error('API error occurred. Please try again.');
+                // API returned error code, try next iteration or fall through to fallback
+                console.log(`API error response: ${data.response_code}`);
+                retryCount++;
+                if (retryCount >= maxRetries) break;
+                continue;
               }
             } else if (response.status === 429) {
               // Rate limited - wait and retry
@@ -79,10 +79,14 @@ const useQuizData = () => {
                 await new Promise(resolve => setTimeout(resolve, retryCount * 2000));
                 continue;
               } else {
-                throw new Error('API rate limit exceeded. Using fallback questions.');
+                console.log('Rate limit exceeded, using fallback');
+                break;
               }
             } else {
-              throw new Error(`HTTP error! status: ${response.status}`);
+              console.log(`HTTP error: ${response.status}`);
+              retryCount++;
+              if (retryCount >= maxRetries) break;
+              continue;
             }
           } catch (fetchError) {
             retryCount++;
@@ -91,16 +95,18 @@ const useQuizData = () => {
               await new Promise(resolve => setTimeout(resolve, retryCount * 2000));
               continue;
             } else {
-              throw fetchError;
+              console.log('Fetch error, breaking to use fallback');
+              break;
             }
           }
         }
 
         // If we reach here, all retries failed - use fallback data
-        throw new Error('API unavailable. Using sample questions for demo.');
+        console.log('API unavailable after retries, using fallback questions');
+        // Fall through to catch block to use fallback data
 
       } catch (err) {
-        console.error('Error fetching quiz data:', err);
+        console.log('API failed, using fallback questions:', err.message);
         
         // Use fallback questions when API fails
         const fallbackQuestions = [
@@ -248,7 +254,7 @@ const useQuizData = () => {
         }));
 
         setQuestions(shuffledFallback);
-        setError(err.message.includes('fallback') || err.message.includes('sample') ? null : err.message);
+        setError(null); // Don't show error since we have working fallback data
       } finally {
         setLoading(false);
       }
